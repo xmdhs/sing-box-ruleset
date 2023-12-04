@@ -73,13 +73,14 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 
 	r := Ruleset{}
 	r.Version = 1
-	r.Rules = map[string][]string{
-		"domain":         lo.Keys(domain),
-		"domain_suffix":  lo.Keys(domainSuffix),
-		"domain_regex":   lo.Keys(domainRegex),
-		"domain_keyword": lo.Keys(domainKeyword),
+	r.Rules = []map[string][]any{
+		{
+			"domain":         lo.Map[string, any](lo.Keys(domain), func(item string, index int) any { return item }),
+			"domain_suffix":  lo.Map[string, any](lo.Keys(domainSuffix), func(item string, index int) any { return item }),
+			"domain_regex":   lo.Map[string, any](lo.Keys(domainRegex), func(item string, index int) any { return item }),
+			"domain_keyword": lo.Map[string, any](lo.Keys(domainKeyword), func(item string, index int) any { return item }),
+		},
 	}
-
 	return &r, nil
 }
 
