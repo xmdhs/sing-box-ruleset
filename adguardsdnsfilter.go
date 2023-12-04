@@ -23,7 +23,6 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 	domain := map[string]struct{}{}
 	domainRegex := map[string]struct{}{}
 	domainSuffix := map[string]struct{}{}
-	domainKeyword := map[string]struct{}{}
 
 	s := filterlist.NewRuleScanner(bytes.NewReader(b), 1, true)
 
@@ -46,22 +45,16 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 				continue
 			}
 			if strings.HasSuffix(rule, ".") {
-				domainKeyword[rule] = struct{}{}
+				domainRegex[`^(.*\.)?`+rule] = struct{}{}
 				continue
 			}
 			domain[rule] = struct{}{}
 			continue
 		}
-		if strings.HasPrefix(rule, "*") || strings.HasSuffix(rule, "*") {
-			domainKeyword[strings.ReplaceAll(rule, "*", "")] = struct{}{}
-			continue
-		}
 		ruleR := strings.TrimPrefix(rule, "://")
 		ruleR = strings.ReplaceAll(ruleR, ".", `\.`)
 		reg := strings.ReplaceAll(ruleR, "*", ".*")
-		if !strings.HasPrefix(hr.RuleText, "|") {
-			reg = "^" + reg
-		}
+		reg = `^(.*\.)?` + reg
 		if strings.HasSuffix(hr.RuleText, "^") {
 			reg = reg + "$"
 		}
@@ -75,10 +68,9 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 	r.Version = 1
 	r.Rules = []map[string][]any{
 		{
-			"domain":         lo.Map[string, any](lo.Keys(domain), func(item string, index int) any { return item }),
-			"domain_suffix":  lo.Map[string, any](lo.Keys(domainSuffix), func(item string, index int) any { return item }),
-			"domain_regex":   lo.Map[string, any](lo.Keys(domainRegex), func(item string, index int) any { return item }),
-			"domain_keyword": lo.Map[string, any](lo.Keys(domainKeyword), func(item string, index int) any { return item }),
+			"domain":        lo.Map[string, any](lo.Keys(domain), func(item string, index int) any { return item }),
+			"domain_suffix": lo.Map[string, any](lo.Keys(domainSuffix), func(item string, index int) any { return item }),
+			"domain_regex":  lo.Map[string, any](lo.Keys(domainRegex), func(item string, index int) any { return item }),
 		},
 	}
 	return &r, nil
