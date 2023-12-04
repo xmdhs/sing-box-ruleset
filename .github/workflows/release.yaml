@@ -3,7 +3,7 @@ name: build rule set
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 3 * * *"
 
 jobs:
   build:
@@ -23,5 +23,5 @@ jobs:
         run: go run -v 
       
       - name: Release
-        run: |
+        run: .github/release-rule-set.sh
           
