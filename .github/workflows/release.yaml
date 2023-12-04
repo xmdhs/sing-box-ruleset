@@ -23,5 +23,7 @@ jobs:
         run: go run -v .
       
       - name: Release
-        run: .github/release-rule-set.sh
+        run: bash .github/release-rule-set.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
