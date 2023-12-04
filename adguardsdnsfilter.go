@@ -59,7 +59,7 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 		ruleR := strings.TrimPrefix(rule, "://")
 		ruleR = strings.ReplaceAll(ruleR, ".", `\.`)
 		reg := strings.ReplaceAll(ruleR, "*", ".*")
-		if strings.HasPrefix(hr.RuleText, "|") {
+		if !strings.HasPrefix(hr.RuleText, "|") {
 			reg = "^" + reg
 		}
 		if strings.HasSuffix(hr.RuleText, "^") {
