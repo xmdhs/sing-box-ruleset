@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/AdguardTeam/urlfilter/filterlist"
@@ -54,7 +55,9 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 		ruleR := strings.TrimPrefix(rule, "://")
 		ruleR = strings.ReplaceAll(ruleR, ".", `\.`)
 		reg := strings.ReplaceAll(ruleR, "*", ".*")
-		reg = `^(.*\.)?` + reg
+		if !strings.HasPrefix(hr.RuleText, "*") {
+			reg = `^(.*\.)?` + reg
+		}
 		if strings.HasSuffix(hr.RuleText, "^") {
 			reg = reg + "$"
 		}
@@ -68,12 +71,18 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 	r.Version = 1
 	r.Rules = []map[string][]any{
 		{
-			"domain":        lo.Map[string, any](lo.Keys(domain), func(item string, index int) any { return item }),
-			"domain_suffix": lo.Map[string, any](lo.Keys(domainSuffix), func(item string, index int) any { return item }),
-			"domain_regex":  lo.Map[string, any](lo.Keys(domainRegex), func(item string, index int) any { return item }),
+			"domain":        toAny(domain),
+			"domain_suffix": toAny(domainSuffix),
+			"domain_regex":  toAny(domainRegex),
 		},
 	}
 	return &r, nil
+}
+
+func toAny(m map[string]struct{}) []any {
+	sl := lo.Keys(m)
+	slices.Sort(sl)
+	return lo.Map[string, any](sl, func(item string, index int) any { return item })
 }
 
 func getFilter(ctx context.Context, c *http.Client) ([]byte, error) {
