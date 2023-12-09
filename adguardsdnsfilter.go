@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"slices"
 	"strings"
@@ -16,10 +17,10 @@ import (
 
 const AdGuardSDNSFilter = "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
 
-func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
+func adguard(ctx context.Context, c *http.Client) (hasReg *Ruleset, noReg *Ruleset, err error) {
 	b, err := getFilter(ctx, c)
 	if err != nil {
-		return nil, fmt.Errorf("adguard: %w", err)
+		return nil, nil, fmt.Errorf("adguard: %w", err)
 	}
 	domain := map[string]struct{}{}
 	domainRegex := map[string]struct{}{}
@@ -67,16 +68,17 @@ func adguard(ctx context.Context, c *http.Client) (*Ruleset, error) {
 		domainSuffix["."+k] = struct{}{}
 	}
 
-	r := Ruleset{}
-	r.Version = 1
-	r.Rules = []map[string][]any{
+	rules := []map[string][]any{
 		{
 			"domain":        toAny(domain),
 			"domain_suffix": toAny(domainSuffix),
 			"domain_regex":  toAny(domainRegex),
 		},
 	}
-	return &r, nil
+	noRegRules := maps.Clone(rules[0])
+	delete(noRegRules, "domain_regex")
+
+	return NewRuleSet(rules), NewRuleSet([]map[string][]any{noRegRules}), nil
 }
 
 func toAny(m map[string]struct{}) []any {

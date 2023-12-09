@@ -7,7 +7,11 @@ set -e -o pipefail
 
 wget https://github.com/SagerNet/sing-box/releases/download/v1.8.0-alpha.11/sing-box-1.8.0-alpha.11-linux-amd64.tar.gz
 tar -zxvf sing-box-1.8.0-alpha.11-linux-amd64.tar.gz
-sing-box-1.8.0-alpha.11-linux-amd64/sing-box rule-set compile output/AdGuardSDNSFilter.json
+
+for file in output/*.json; do
+    sing-box-1.8.0-alpha.11-linux-amd64/sing-box rule-set compile "$file"
+done
+
 
 cd output
 git init
