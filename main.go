@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	adg, adgNoReg, err := adguard(context.Background(), &http.Client{})
+	_, adgNoReg, err := adguard(context.Background(), &http.Client{})
 	if err != nil {
 		panic(err)
 	}
 	os.MkdirAll("output", 0777)
-	write("output/AdGuardSDNSFilter.json", adg)
+	write("output/AdGuardSDNSFilter.json", adgNoReg)
 	write("output/AdGuardSDNSFilter-NoRegex.json", adgNoReg)
 }
 
