@@ -17,6 +17,6 @@
     "tag": "AdGuardSDNSFilter",
     "type": "remote",
     "format": "binary",
-    "url": "https://raw.githubusercontent.com/xmdhs/sing-box-ruleset/rule-set/AdGuardSDNSFilterSingBox.srs.srs"
+    "url": "https://raw.githubusercontent.com/xmdhs/sing-box-ruleset/rule-set/AdGuardSDNSFilterSingBox.srs"
 }
 ```
