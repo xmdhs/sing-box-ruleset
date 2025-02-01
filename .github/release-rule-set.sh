@@ -5,11 +5,11 @@
 set -e -o pipefail
 
 
-wget https://github.com/SagerNet/sing-box/releases/download/v1.8.0-alpha.11/sing-box-1.8.0-alpha.11-linux-amd64.tar.gz
-tar -zxvf sing-box-1.8.0-alpha.11-linux-amd64.tar.gz
+wget https://github.com/SagerNet/sing-box/releases/download/v1.11.0/sing-box-1.11.0-linux-amd64.tar.gz
+tar -zxvf sing-box-1.11.0-linux-amd64.tar.gz
 
 for file in output/*.json; do
-    sing-box-1.8.0-alpha.11-linux-amd64/sing-box rule-set compile "$file"
+    sing-box-1.11.0-linux-amd64/sing-box rule-set compile "$file"
 done
 
 

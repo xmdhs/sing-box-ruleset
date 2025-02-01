@@ -25,6 +25,9 @@ jobs:
       - name: Build
         run: go run -v .
       
+      - name: Build
+        run: bash ./build-adguard.sh
+      
       - name: Release
         run: bash .github/release-rule-set.sh
         env:
